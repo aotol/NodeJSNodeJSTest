@@ -1,6 +1,5 @@
 var Sequelize = require('sequelize');
 var config = require('../config');
-//var users = require('./users.js');
 
 var connection = new Sequelize(config.database,
 	config.username,
@@ -14,19 +13,8 @@ var connection = new Sequelize(config.database,
 		}
 	});
 
-var users = connection.define('users', {
-	id: {
-		type: Sequelize.BIGINT,
-		primaryKey: true
-	},
-	username: Sequelize.STRING(32),
-	password: Sequelize.STRING(32),
-	level: Sequelize.INTEGER
-}, {
-	timestamps: false
-});
-
 async function createUser(username, password, level) {
+	var users = require('./users.js');
 	var user = users.create({
 		username: username,
 		password: password,

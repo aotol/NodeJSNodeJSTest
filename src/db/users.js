@@ -1,6 +1,6 @@
 var Sequelize = require('sequelize');
-var connection = require('./db.js');
-var users = connection.connection.define('users', {
+var dbConnection = require('./db.js');
+var users = dbConnection.connection.define('users', {
 	id: {
 		type: Sequelize.BIGINT,
 		primaryKey: true
