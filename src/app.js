@@ -1,42 +1,38 @@
+/**
+ * Improved coding version from app.js with same function
+ */
 'use strict';
-var Koa = require('koa');
+var koa = new(require('koa'))();
 var router = require('koa-router')();
 var bodyParser = require('koa-bodyparser')();
-var app = new Koa();
-app.use(async (ctx, next)=>{
-	console.log(`Process ${ctx.request.method} ${ctx.request.url}...`);
+var files = require('fs').readdirSync(__dirname + '/controllers');
+var controller_files = files.filter((file) => {
+	return file.endsWith('.js');
+});
+for (var file of controller_files) {
+	console.log('Processing: ' + file);
+	var controller = require(__dirname + '/controllers/' + file);
+	for (var fn in controller) {
+		var path;
+		if (fn.startsWith('GET ')) {
+			path = fn.substring(fn.indexOf('GET ') + 'GET '.length);
+			router.get(path, controller[fn]);
+		} else if (fn.startsWith('POST ')) {
+			path = fn.substring(fn.indexOf('POST ') + 'POST '.length);
+			router.post(path, controller[fn]);
+		} else {
+			path = '/error';
+			var errorController = require('./controllers/error.js');
+			router.get(path, errorController.get_error);
+		}
+		console.log('Register ' + path + ' completed');
+	}
+}
+koa.use(async (ctx, next) => {
+	console.log(`Process ${ctx.request.method} ${ctx.request.url}`);
 	await next();
 });
-// add url-route:
-router.get('/hello/:name', async (ctx, next) => {
-    var name = ctx.params.name;
-	ctx.response.body = `<h1>Hello, ${name}!</h1>`;
-	console.log(`Route complete`);
-});
-
-router.get('/', async (ctx, next) => {
-	ctx.response.body = '<h1>Index</h1>';
-	ctx.response.body += '<form action="/signin" method="post">';
-	ctx.response.body += '<p>Name: <input name="name" value=""></p>';
-	ctx.response.body += '<p>Password: <input name="password" type="password"></p>';
-	ctx.response.body += '<p><input type="submit" value="Submit"></p>';
-	ctx.response.body += '</form>';
-	console.log('Route complete');
-});
-
-router.post('/signin', async (ctx, next) => {
-	var name = ctx.request.body.name;
-	var password = ctx.request.body.password;
-	if (password === '123456') {
-		ctx.response.body = 'Hello: ' + name;
-	} else {
-		ctx.response.body = 'Authentication error';
-	}
-});
-
-app.use(bodyParser);
-// add router middleware:
-app.use(router.routes());
-
-app.listen(3000);
+koa.use(bodyParser);
+koa.use(router.routes());
+koa.listen(3000);
 console.log('app started at port 3000...');
