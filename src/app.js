@@ -6,6 +6,7 @@ var koa = new(require('koa'))();
 var router = require('koa-router')();
 var bodyParser = require('koa-bodyparser')();
 var files = require('fs').readdirSync(__dirname + '/controllers');
+//=> in JS means anonymous function. The following (file) => {...} means function(file) {...}
 var controller_files = files.filter((file) => {
 	return file.endsWith('.js');
 });
