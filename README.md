@@ -1,4 +1,4 @@
-# codemix-vanilla-nodejs
+# nodejs learning tutorial
 Template for project creation of NodeJS inside CodeMix
 
 ## Contents
