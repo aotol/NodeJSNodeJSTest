@@ -1,7 +1,10 @@
-# codemix-vanilla-nodejs
+# nodejs learning tutorial
 Template for project creation of NodeJS inside CodeMix
 
 ## Contents
 
-The template project is just an example Hello World that guide you through the use of nodejs with the Expressjs framework to build a very simple web application that display the Hello World!!! Greeting
-
+The template project is just an example Hello World that guide you through the use of nodejs with the Koa2 framework to build a very simple:
+hello world
+client-server
+database connection
+WebSocket
