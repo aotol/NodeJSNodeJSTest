@@ -1,40 +1,43 @@
 'use strict';
 
-let koa = new(require('koa'))();
+let koa = new (require('koa'))();
 let router = require('koa-router')();
 let bodyParser = require('koa-bodyparser')();
-
-router.get('/hello/:name', async (ctx, next) => {
-    var name = ctx.params.name;
-	ctx.response.body = `<h1>Hello, ${name}!</h1>`;
-	console.log(`Route complete`);
+let chatRoomController = require('./web/controller/chat_room_controller');
+let fs = require('fs');
+let files = fs.readdirSync(__dirname + '/web/html');
+let path = require("path");
+let htmls = files.filter((file) => {
+	return file.endsWith('.html');
 });
+for (let file of htmls) {
+	console.log('Processing: ' + __dirname + '/web/html/' + file);
+	let registeredPath = '/' + path.basename(file);
+	let htmlContent = fs.readFileSync(__dirname + '/web/html/' + file);
+	router.get(registeredPath, async (ctx, next) => {
+		console.log('Client is requesting ' + registeredPath);
+		ctx.set('Content-Type', 'text/html');
+		ctx.response.body = htmlContent.toString();
+	});
+	console.log('Register ' + registeredPath + ' completed');
+}
 
 router.get('/', async (ctx, next) => {
-	ctx.response.body = '<h1>Index</h1>';
-	ctx.response.body += '<form action="/signin" method="post">';
-	ctx.response.body += '<p>Name: <input name="name" value=""></p>';
-	ctx.response.body += '<p>Password: <input name="password" type="password"></p>';
-	ctx.response.body += '<p><input type="submit" value="Submit"></p>';
-	ctx.response.body += '</form>';
-	console.log('Route complete');
+	console.log('Client is requesting / path');
+	ctx.response.redirect('/join.html');
 });
 
 router.post('/signin', async (ctx, next) => {
-	var name = ctx.request.body.name;
-	var password = ctx.request.body.password;
-	if (password === '123456') {
-		ctx.response.body = 'Hello: ' + name;
-	} else {
-		ctx.response.body = 'Authentication error';
-	}
+	console.log('Client is requesting /signin path');
+	chatRoomController.createUser(ctx, next);
 });
 
 koa.use(bodyParser);
 koa.use(router.routes());
 koa.listen(3000);
+console.log('koa server is up at port 3000');
 
-let wss = new(require('ws')).Server({
+let wss = new (require('ws')).Server({
 	server: koa
 });
 
@@ -61,7 +64,7 @@ function parseUser(obj) {
 	}
 }
 
-app.use(async function (ctx, next) {
+koa.use(async function (ctx, next) {
 	let name = ctx.cookies.get('name');
 	if (!name) {
 		name = '';

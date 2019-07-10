@@ -1,6 +1,6 @@
 'use strict';
 let index = 0;
-let fn_createUser = async(ctx, next) => {
+let fn_createUser = async function(ctx, next) {
 	let name = ctx.params.name;
 	let id = index;   
 	index = index + 1; 
@@ -14,5 +14,5 @@ let fn_createUser = async(ctx, next) => {
 };
 
 module.exports = {
-	 'POST /create': fn_createUser
+	 createUser: fn_createUser
 }
