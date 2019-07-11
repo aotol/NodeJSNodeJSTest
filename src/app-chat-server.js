@@ -10,6 +10,11 @@ let path = require("path");
 let htmls = files.filter((file) => {
 	return file.endsWith('.html');
 });
+files = fs.readdirSync(__dirname + '/web/lib');
+let javascripts = files.filter((file) => {
+	return file.endsWith('.js');
+});
+
 for (let file of htmls) {
 	console.log('Processing: ' + __dirname + '/web/html/' + file);
 	let registeredPath = '/' + path.basename(file);
@@ -22,6 +27,18 @@ for (let file of htmls) {
 	console.log('Register ' + registeredPath + ' completed');
 }
 
+for (let file of javascripts) {
+	console.log('Processing: ' + __dirname + '/web/lib/' + file);
+	let registeredPath = '/' + path.basename(file);
+	let javascriptContent = fs.readFileSync(__dirname + '/web/lib/' + file);
+	router.get(registeredPath, async (ctx, next) => {
+		console.log('Client is requesting ' + registeredPath);
+		ctx.set('Content-Type', 'text/javascript');
+		ctx.response.body = javascriptContent.toString();
+	});
+	console.log('Register ' + registeredPath + ' completed');
+}
+
 router.get('/', async (ctx, next) => {
 	console.log('Client is requesting / path');
 	ctx.response.redirect('/join.html');
@@ -30,6 +47,15 @@ router.get('/', async (ctx, next) => {
 router.post('/signin', async (ctx, next) => {
 	console.log('Client is requesting /signin path');
 	chatRoomController.createUser(ctx, next);
+	ctx.response.redirect('/chat_room.html');
+});
+
+router.get('/users', async (ctx, next) => {
+	console.log('Client is requesting /users path');
+	let users = chatRoomController.getUsers(ctx, next);
+	let body = JSON.stringify(users);
+	ctx.set('CONTENT-Type', 'application/json');
+	ctx.response.body = body;
 });
 
 koa.use(bodyParser);

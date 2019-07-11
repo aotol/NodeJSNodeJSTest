@@ -4,41 +4,64 @@
 <head>
 	<meta charset="utf-8">
 	<title>Chat room</title>
-	<script src="../lib/vue.min.js">
+	<script src="/vue.min.js">
+	</script>
+	<script src="/vue-resource.min.js">
 	</script>
 	<script type="text/javascript">
+		let vm = new Vue({
+			el: '#users-list',
+			data() {
+				users: []
+			},
+			created: function () {
+				this.fetchData();
+			},
+			methods: {
+				fetchData: function () {
+					this.$http.get(
+							'http://localhost:3000/users')
+						.then(response => {
+							this.users = JSON.stringify(response.data);
+						})
+				}
+			}
+		})
+
 		function WebSocketTest() {
 			if ("WebSocket" in window) {
-				alert("WebSocket is supported by your Browser!");
+				console.log("WebSocket is supported by your Browser!");
 				// Let us open a web socket
 				var ws = new WebSocket("ws://localhost:3000/ws/chat");
 				ws.onopen = function () {
 					// Web Socket is connected, send data using send()
 					ws.send("Message to send");
-					alert("Message is sent...");
+					console.log("Message is sent...");
 				};
 				ws.onmessage = function (evt) {
 					var received_msg = evt.data;
-					alert("Message is received...");
+					console.log("Message is received: " + received_msg);
 				};
 				ws.onclose = function () {
 					// websocket is closed.
-					alert("Connection is closed...");
+					console.log("Connection is closed...");
 				};
 			} else {
 				// The browser doesn't support WebSocket
 				alert("WebSocket NOT supported by your Browser!");
 			}
 		}
-		WebSocketTest();
 	</script>
 </head>
 
 <body>
-	<form action="/signin" method="post">
-		<p>Name: <input name="name" value=""></p>
-		<p><input type="submit" value="Submit"></p>
-	</form>
+	<div id="users-list">
+		<div v-for="user in users">
+			<div>
+				<span v-text="user.name"></span>
+			</div>
+		</div>
+	</div>
 </body>
 
 </html>
