@@ -9,25 +9,6 @@
 	<script src="/vue-resource.min.js">
 	</script>
 	<script type="text/javascript">
-		let vm = new Vue({
-			el: '#users-list',
-			data() {
-				users: []
-			},
-			created: function () {
-				this.fetchData();
-			},
-			methods: {
-				fetchData: function () {
-					this.$http.get(
-							'http://localhost:3000/users')
-						.then(response => {
-							this.users = JSON.stringify(response.data);
-						})
-				}
-			}
-		})
-
 		function WebSocketTest() {
 			if ("WebSocket" in window) {
 				console.log("WebSocket is supported by your Browser!");
@@ -56,12 +37,39 @@
 
 <body>
 	<div id="users-list">
+		User List
 		<div v-for="user in users">
 			<div>
 				<span v-text="user.name"></span>
 			</div>
 		</div>
 	</div>
+	<script>
+		/*let users = [{
+			name: "Ashley",
+			id: 1
+		}];
+		{
+			name: "Ashley",
+			id: 1
+		}*/
+		let vm = new Vue({
+			el: '#users-list',
+			data: users,
+			created: function () {
+				this.fetchData();
+			},
+			methods: {
+				fetchData: function () {
+					this.$http.get(
+						'http://localhost:3000/users')
+						.then(response => {
+							this.users = response.data;
+						})
+				}
+			}
+		})
+	</script>
 </body>
 
 </html>
