@@ -45,24 +45,23 @@
 		</div>
 	</div>
 	<script>
-		/*let users = [{
-			name: "Ashley",
-			id: 1
-		}];
-		{
-			name: "Ashley",
-			id: 1
-		}*/
+		let users = [];
 		let vm = new Vue({
 			el: '#users-list',
-			data: users,
+			data: {
+				//Initiate values
+				users: [{
+					id: "1",
+					name: "Ashley"
+				}]
+			},
 			created: function () {
-				this.fetchData();
+				this.getUsers();
 			},
 			methods: {
-				fetchData: function () {
+				getUsers: function () {
 					this.$http.get(
-						'http://localhost:3000/users')
+							'http://localhost:3000/users')
 						.then(response => {
 							this.users = response.data;
 						})
